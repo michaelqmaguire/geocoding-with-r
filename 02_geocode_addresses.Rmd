@@ -3,6 +3,7 @@ title: "Geocoding in R"
 author: "Michael Quinn Maguire, MS"
 date: "5/24/2021"
 output: github_document
+always_allow_html: yes
 ---
 
 #### It's your usual meeting time on Zoom, and maybe you're taking a sip of coffee. 

@@ -280,7 +280,7 @@ pharamciesCensusMethod
     ##  5 Shands Rehabilitat~ 4101 NW 89th ~ Gainesv~ FL    32606 (352)265~  29.7 -82.4
     ##  6 Shands Vista        4101 NW 89th ~ Gainesv~ FL    32606 (352)265~  29.7 -82.4
     ##  7 N Florida Reg Med ~ 6500 W Newber~ Gainesv~ FL    32605 (352)333~  29.7 -82.4
-    ##  8 Tri County Hospita~ 125 SW 7th St  Willist~ FL    32696 (352)528~  29.4 -82.5
+    ##  8 Tri County Hospita~ 125 SW 7th St  Willist~ FL    32696 (352)528~  NA    NA  
     ##  9 Reception & Medica~ 7765 S County~ Lake Bu~ FL    32054 (386)496~  30.0 -82.3
     ## 10 Shands Starke Medi~ 922 E Call St  Starke   FL    32091 (904)368~  29.9 -82.1
     ## 11 Lake Butler Hospit~ 850 E Main St  Lake Bu~ FL    32054 (386)496~  30.0 -82.3
@@ -335,7 +335,20 @@ We can then write out the file.
 write_csv(x = pharmaciesCascadeMethod, file = "save-to-my-directory")
 ```
 
-#### Hold up: I don’t want to do all this, can I just do all this in excel and pull in the file?
+We can plot them then, too. Here’s an appetizer, if you will:
+
+``` r
+library(leaflet) 
+
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(pharmaciesCascadeMethod, lng = pharmaciesCascadeMethod$long, lat = pharmaciesCascadeMethod$lat)
+```
+
+<div id="htmlwidget-f57140311e5041b77a31" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f57140311e5041b77a31">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addMarkers","args":[[29.61802,29.639494,29.6719241,29.665777,29.691442,29.691442,29.659714,29.38366485,29.995422,29.942062,30.023544,29.175127,29.174002],[-82.3845094,-82.34262,-82.2933192471213,-82.24976,-82.43724,-82.43724,-82.41072,-82.4550767251548,-82.34933,-82.10227,-82.328545,-82.13787,-82.13788],null,{"Name":["Malcom Randall VA Medical Ctr","Shands Hospital-University FL","Tacachale","North Florida Evaluation/Trtmnt","Shands Rehabilitation Hospital","Shands Vista","N Florida Reg Med Ctr","Tri County Hospital Williston","Reception & Medical Center","Shands Starke Medical Center","Lake Butler Hospital","Ocala Regional Medical Center","Munroe Regional Medical Center"],"Address":["1601 SW Archer Rd","1600 SW Archer Rd","1621 NE Waldo Rd","1200 NE 55th Blvd","4101 NW 89th Blvd","4101 NW 89th Blvd","6500 W Newberry Rd","125 SW 7th St","7765 S County Road 231","922 E Call St","850 E Main St","1431 SW 1st Ave","1500 SW 1st Ave"],"City":["Gainesville","Gainesville","Gainesville","Gainesville","Gainesville","Gainesville","Gainesville","Williston","Lake Butler","Starke","Lake Butler","Ocala","Ocala"],"State":["FL","FL","FL","FL","FL","FL","FL","FL","FL","FL","FL","FL","FL"],"Zip":["32608","32610","32609","32641","32606","32606","32605","32696","32054","32091","32054","34471","34471"],"Phone":["(352)376-1611","(352)265-0111","(352)955-5000","(352)375-8484","(352)265-5491","(352)265-5497","(352)333-4000","(352)528-2801","(386)496-6000","(904)368-2300","(386)496-2323","(352)401-1000","(352)351-7200"],"lat":[29.61802,29.639494,29.6719241,29.665777,29.691442,29.691442,29.659714,29.38366485,29.995422,29.942062,30.023544,29.175127,29.174002],"long":[-82.3845094,-82.34262,-82.2933192471213,-82.24976,-82.43724,-82.43724,-82.41072,-82.4550767251548,-82.34933,-82.10227,-82.328545,-82.13787,-82.13788],"geo_method":["osm","census","osm","census","census","census","census","osm","census","census","census","census","census"]},null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[29.174002,30.023544],"lng":[-82.4550767251548,-82.10227]}},"evals":[],"jsHooks":[]}</script>
+
+#### Hold up: I don’t want to do all this, can I just do all this in Excel and pull in the file?
 
 Sure! I’m a big advocate of reproducibility and having a paper-trail, so
 I think everything should be written in code.
@@ -350,8 +363,8 @@ Here is what I would suggest for you to do:
 2.  Load/install `tidyverse`, `tidygeocoder`, and `readxl` packages. You
     do not need to reinstall if you’ve already installed one.
 3.  Read in the dataset into R using:
-    -   `read_excel` from the `readxl` package for Excel files **MUST
-        INSTALL AND LOAD**
+    -   `read_excel` from the `readxl` package for Excel files. **MUST
+        INSTALL AND LOAD!**
     -   `read_csv` from the `readr` package (automatically loaded with
         `tidyverse`)
     -   `read.csv` using the base-R `utils` package (you do not need to
@@ -410,5 +423,3 @@ We can then write it out to our destination directory.
 write.csv(x = geocoded, file = "save-to-my-directory") # base-R approach
 write_csv(x = geocode, file = "save-to-my-directory") # readr approach
 ```
-
-Plotting will have to wait for another post!
