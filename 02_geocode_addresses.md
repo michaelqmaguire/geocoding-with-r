@@ -13,7 +13,7 @@ There are a couple camps here:
 1.  You feel comfortable working with GIS software.
 2.  You’re not familiar with GIS software, but you know how to use the
     [Census
-    Geocoder](https://geocoding.geo.census.gov/geocoder/locations/addressbatch?form)
+    Geocoder](https://geocoding.geo.census.gov/geocoder/locations/addressbatch?form).
 3.  You have no clue what to do.
 
 If you’re in the first camp, you *might* be fine. Assuming you have
@@ -27,7 +27,7 @@ frustrated because it doesn’t always return a great match rate?
 
 What if you have no idea what you’re doing?
 
-#### Insert R!
+#### Enter R!
 
 Now, if you let me talk long enough, I’ll talk your ear off about how
 you can use R for everything (not everything, but most things).
@@ -44,10 +44,10 @@ There are so many benefits:
 
 #### Let’s look at an example.
 
-I went ahead and grabbed some local medical institutions that presumable
+I went ahead and grabbed some local medical institutions that presumably
 have prescribing capabilities.
 
-I figured that something like this is relateable considering we live in
+I figured that something like this is relatable considering we live in
 the area.
 
 First things first, though – you need to load the libraries.
@@ -61,7 +61,7 @@ We will be working with two packages:
 1.  `tidyverse`
 2.  `tidygeocoder`
 
-If you do not have these packages installed, do the following in your
+If you do not have these packages installed, run the following in your
 console:
 
 ``` r
@@ -90,7 +90,8 @@ get lost in the details here – it’s going to spit out exactly what we
 need, and it is what your data will probably look like anyway.
 
 I’m going to store the addresses for the pharmacies into an object
-called ‘pharmacies’.
+called ‘pharmacies’. Go ahead and copy this and paste it into your R
+session!
 
 ``` r
 pharmacies <- 
@@ -151,10 +152,8 @@ Now, one feature of the tidyverse is its use of the pipe, or the `%>%`
 symbol. Pipes practically say *take this object on the left and feed it
 to what I have after it*.
 
-I like to think of it like you’re feeding the object to whatever follows
-it. I like to eat, so maybe think of the pipe as you taking your
-favorite food (the object) and feeding it into your body (whatever
-follows).
+I like to eat, so maybe think of the pipe as you taking your favorite
+food (the object) and feeding it into your body (and whatever follows).
 
 So here, we’re doing a couple things:
 
@@ -174,13 +173,17 @@ So here, we’re doing a couple things:
     that you have to escape whatever you want to break on with double
     backslashes in R.
 7.  Let’s keep that feeding going – we’re taking that chewed-up
-    pharmacies object from \#2-\#6 and feeding it into another object.
+    pharmacies object from \#2-\#6 and feeding it into another
+    `separate` function
 8.  Again, we’ve already declared the data element to be the
     ‘pharmacies’ object through the pipe, so fill this with another `.`.
 9.  We now want to split the newly created ‘StateZip’ field.
 10. And we’re splitting it into two new fields, ‘State’ and ‘Zip’.
 11. And we’re splitting on a space! `s` stands for space in regular
     expressions.
+
+Again, feel free to copy and paste this code and put it into your R
+session!
 
 ``` r
 pharmaciesCSZSeparate <-
@@ -255,6 +258,8 @@ Let’s go through this step by step again:
 7.  This is where things get fun, you specify a method. I chose ‘census’
     for those of us familiar with the census geocoder.
 
+Here I am again – copy and paste this into your R session!
+
 ``` r
 pharamciesCensusMethod <- 
   pharmaciesCSZSeparate %>% # 1
@@ -297,6 +302,8 @@ uses a combination of the `census` method **AND** the `osm` method.
 `osm` stands for open street map, and you can read more about that
 [here](https://wiki.openstreetmap.org/wiki/About_OpenStreetMap).
 
+You guessed it – copy and paste this into your R session!
+
 ``` r
 pharmaciesCascadeMethod <- 
   pharmaciesCSZSeparate %>% # 1
@@ -329,26 +336,15 @@ pharmaciesCascadeMethod
     ## 12 Ocala Regiona~ 1431 SW 1st~ Ocala  FL    34471 (352)4~  29.2 -82.1 census    
     ## 13 Munroe Region~ 1500 SW 1st~ Ocala  FL    34471 (352)3~  29.2 -82.1 census
 
+Wow! Each address is geocoded at this point! How exciting!
+
 We can then write out the file.
 
 ``` r
 write_csv(x = pharmaciesCascadeMethod, file = "save-to-my-directory")
 ```
 
-We can plot them then, too. Here’s an appetizer, if you will:
-
-``` r
-library(leaflet) 
-
-leaflet() %>%
-  addTiles() %>%
-  addMarkers(pharmaciesCascadeMethod, lng = pharmaciesCascadeMethod$long, lat = pharmaciesCascadeMethod$lat)
-```
-
-<div id="htmlwidget-0057fa838982844fd0f7" style="width:100%;height:216px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0057fa838982844fd0f7">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addMarkers","args":[[29.61802,29.639494,29.6719241,29.665777,29.691442,29.691442,29.659714,29.38366485,29.995422,29.942062,30.023544,29.175127,29.174002],[-82.3845094,-82.34262,-82.2933192471213,-82.24976,-82.43724,-82.43724,-82.41072,-82.4550767251548,-82.34933,-82.10227,-82.328545,-82.13787,-82.13788],null,{"Name":["Malcom Randall VA Medical Ctr","Shands Hospital-University FL","Tacachale","North Florida Evaluation/Trtmnt","Shands Rehabilitation Hospital","Shands Vista","N Florida Reg Med Ctr","Tri County Hospital Williston","Reception & Medical Center","Shands Starke Medical Center","Lake Butler Hospital","Ocala Regional Medical Center","Munroe Regional Medical Center"],"Address":["1601 SW Archer Rd","1600 SW Archer Rd","1621 NE Waldo Rd","1200 NE 55th Blvd","4101 NW 89th Blvd","4101 NW 89th Blvd","6500 W Newberry Rd","125 SW 7th St","7765 S County Road 231","922 E Call St","850 E Main St","1431 SW 1st Ave","1500 SW 1st Ave"],"City":["Gainesville","Gainesville","Gainesville","Gainesville","Gainesville","Gainesville","Gainesville","Williston","Lake Butler","Starke","Lake Butler","Ocala","Ocala"],"State":["FL","FL","FL","FL","FL","FL","FL","FL","FL","FL","FL","FL","FL"],"Zip":["32608","32610","32609","32641","32606","32606","32605","32696","32054","32091","32054","34471","34471"],"Phone":["(352)376-1611","(352)265-0111","(352)955-5000","(352)375-8484","(352)265-5491","(352)265-5497","(352)333-4000","(352)528-2801","(386)496-6000","(904)368-2300","(386)496-2323","(352)401-1000","(352)351-7200"],"lat":[29.61802,29.639494,29.6719241,29.665777,29.691442,29.691442,29.659714,29.38366485,29.995422,29.942062,30.023544,29.175127,29.174002],"long":[-82.3845094,-82.34262,-82.2933192471213,-82.24976,-82.43724,-82.43724,-82.41072,-82.4550767251548,-82.34933,-82.10227,-82.328545,-82.13787,-82.13788],"geo_method":["osm","census","osm","census","census","census","census","osm","census","census","census","census","census"]},null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[29.174002,30.023544],"lng":[-82.4550767251548,-82.10227]}},"evals":[],"jsHooks":[]}</script>
-
-#### Hold up: I don’t want to do all this, can I just do all this in Excel and pull in the file?
+## Hold up: I don’t want to do all this, can I just do all this in Excel and pull in the file?
 
 Sure! I’m a big advocate of reproducibility and having a paper-trail, so
 I think everything should be written in code.
@@ -358,19 +354,24 @@ frame is slim.
 
 Here is what I would suggest for you to do:
 
-1.  Create the (1) Address, (2) City, (3) State, and (4) Zip fields for
-    each address that you need.
-2.  Load/install `tidyverse`, `tidygeocoder`, and `readxl` packages. You
+1.  Create/arrange the (1) Address, (2) City, (3) State, and (4) Zip
+    fields in Excel for each address that you need.
+2.  Boot up RStudio.
+3.  Load/install `tidyverse`, `tidygeocoder`, and `readxl` packages. You
     do not need to reinstall if you’ve already installed one.
-3.  Read in the dataset into R using:
-    -   `read_excel` from the `readxl` package for Excel files. **MUST
-        INSTALL AND LOAD!**
+4.  Read in the dataset into R using:
+    -   `read_excel` from the `readxl` package for Excel files. **AGAIN,
+        YOU MUST INSTALL AND LOAD!**
     -   `read_csv` from the `readr` package (automatically loaded with
-        `tidyverse`)
+        `tidyverse`). If you save it from Excel as a .csv, this function
+        will read in the data.
     -   `read.csv` using the base-R `utils` package (you do not need to
-        load this - it is already loaded when you start R)
-4.  Feed your imported dataset `tidygeocoder`.
-5.  Output the file.
+        load this - it is already loaded when you start R). Again, if
+        you save it from Excel as a .csv, this function will read in the
+        data appropriately, but you have to be wary of the
+        `stringsAsFactors` argument mentioned below.
+5.  Feed your imported dataset to `tidygeocoder`.
+6.  Output the file.
 
 Another tutorial:
 
@@ -423,3 +424,24 @@ We can then write it out to our destination directory.
 write.csv(x = geocoded, file = "save-to-my-directory") # base-R approach
 write_csv(x = geocode, file = "save-to-my-directory") # readr approach
 ```
+
+I’m going to save plotting for another time, because there’s so much
+that can be done within R.
+
+### Information about R if you’ve never touched it before:
+
+I recommend:
+
+1.  Downloading R from [CRAN](https://cran.r-project.org/).
+2.  Then downloading
+    [RStudio](https://www.rstudio.com/products/rstudio/download/).
+    RStudio is a graphic user interface. It isn’t R itself – it’s like
+    the body of the car while R from CRAN is the engine.
+3.  When both have been installed open up the RStudio app and begin
+    coding!
+
+If you need any help navigating the graphic user interface (GUI) of
+RStudio, feel free to reach out to me. I’m available in person most
+days, and I can certainly meet over Zoom.
+
+Until next time!
