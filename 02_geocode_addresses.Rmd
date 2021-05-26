@@ -1,9 +1,12 @@
 ---
-title: "Geocoding in R"
+title: Geocoding in R
+subtitle: It's actually kind of easy
 author: "Michael Quinn Maguire, MS"
 date: "5/24/2021"
 output: github_document
+linktormd: true
 always_allow_html: yes
+leafletmap: true
 ---
 
 #### It's your usual meeting time on Zoom, and maybe you're taking a sip of coffee. 
@@ -13,7 +16,7 @@ All is well, and then your professor/supervisor tells you that they have a list 
 There are a couple camps here: 
 
   1. You feel comfortable working with GIS software.
-  2. You're not familiar with GIS software, but you know how to use the [Census            Geocoder](https://geocoding.geo.census.gov/geocoder/locations/addressbatch?form)
+  2. You're not familiar with GIS software, but you know how to use the [Census Geocoder](https://geocoding.geo.census.gov/geocoder/locations/addressbatch?form).
   3. You have no clue what to do.
   
 If you're in the first camp, you *might* be fine. Assuming you have access to the software you've used, you can get these addresses geocoded.
@@ -24,7 +27,7 @@ What if you know how to use the Census Geocoder, but you always get frustrated b
 
 What if you have no idea what you're doing?
 
-#### Insert R!
+#### Enter R!
 
 Now, if you let me talk long enough, I'll talk your ear off about how you can use R for everything (not everything, but most things). 
 
@@ -37,9 +40,9 @@ There are so many benefits:
   
 #### Let's look at an example.
 
-I went ahead and grabbed some local medical institutions that presumable have prescribing capabilities. 
+I went ahead and grabbed some local medical institutions that presumably have prescribing capabilities. 
 
-I figured that something like this is relateable considering we live in the area.
+I figured that something like this is relatable considering we live in the area.
 
 First things first, though -- you need to load the libraries.
 
@@ -50,7 +53,7 @@ We will be working with two packages:
   1. `tidyverse`
   2. `tidygeocoder`
   
-If you do not have these packages installed, do the following in your console:
+If you do not have these packages installed, run the following in your console:
 
 ```{r installPackages, eval = FALSE}
 install.packages("tidyverse")
@@ -72,7 +75,7 @@ I am going to use the `tribble` function from the `tibble` package. `tibble` is 
 
 Here's what you need to know: `tribble` stands for *transposed* `tibble`, and a tibble is basically a data set/data frame. No need to get lost in the details here -- it's going to spit out exactly what we need, and it is what your data will probably look like anyway.
 
-I'm going to store the addresses for the pharmacies into an object called 'pharmacies'.
+I'm going to store the addresses for the pharmacies into an object called 'pharmacies'. Go ahead and copy this and paste it into your R session!
 
 ```{r addressLoad}
 pharmacies <- 
@@ -108,7 +111,7 @@ Let's parse it using the `tidyr` package which is housed in the `tidyverse`.
 
 Now, one feature of the tidyverse is its use of the pipe, or the `%>%` symbol. Pipes practically say *take this object on the left and feed it to what I have after it*.
 
-I like to think of it like you're feeding the object to whatever follows it. I like to eat, so maybe think of the pipe as you taking your favorite food (the object) and feeding it into your body (whatever follows).
+I like to eat, so maybe think of the pipe as you taking your favorite food (the object) and feeding it into your body (and whatever follows).
 
 So here, we're doing a couple things:
 
@@ -119,11 +122,13 @@ So here, we're doing a couple things:
   4. We're wanting to separate the 'CityStateZip' field.
   5. We want to separate the 'CityStateZip' field into two new fields: (1) 'City' and (2) 'StateZip'
   6. We're wanting to split the 'CityStateZip' field where a comma occurs. If you're not familiar with regular expressions, just know that you have to escape whatever you want to break on with double backslashes in R.
-  7. Let's keep that feeding going -- we're taking that chewed-up pharmacies object from #2-#6 and feeding it into another object.
+  7. Let's keep that feeding going -- we're taking that chewed-up pharmacies object from #2-#6 and feeding it into another `separate` function
   8. Again, we've already declared the data element to be the 'pharmacies' object through the pipe, so fill this with another `.`.
   9. We now want to split the newly created 'StateZip' field.
   10. And we're splitting it into two new fields, 'State' and 'Zip'.
   11. And we're splitting on a space! `s` stands for space in regular expressions.
+
+Again, feel free to copy and paste this code and put it into your R session!
 
 ```{r parseAddresses}
 pharmaciesCSZSeparate <-
@@ -166,6 +171,8 @@ Let's go through this step by step again:
   6. Geocode Argument 4: `postalcode` should be set to the `Zip` field in our dataset.
   7. This is where things get fun, you specify a method. I chose 'census' for those of us familiar with the census geocoder.
 
+Here I am again -- copy and paste this into your R session!
+
 ```{r plotCensus}
 pharamciesCensusMethod <- 
   pharmaciesCSZSeparate %>% # 1
@@ -185,6 +192,8 @@ Alright, we're getting somewhere, but notice those `NA` fields. Ugh, just like t
 
 Think again! Just change that method to `cascade`. What this does is it uses a combination of the `census` method **AND** the `osm` method. `osm` stands for open street map, and you can read more about that [here](https://wiki.openstreetmap.org/wiki/About_OpenStreetMap).
 
+You guessed it -- copy and paste this into your R session!
+
 ```{r plotCascade}
 pharmaciesCascadeMethod <- 
   pharmaciesCSZSeparate %>% # 1
@@ -200,23 +209,15 @@ pharmaciesCascadeMethod <-
 pharmaciesCascadeMethod
 ```
 
+Wow! Each address is geocoded at this point! How exciting!
+
 We can then write out the file.
 
 ```{r writeItOut1, eval = FALSE}
 write_csv(x = pharmaciesCascadeMethod, file = "save-to-my-directory")
 ```
 
-We can plot them then, too. Here's an appetizer, if you will:
-
-```{r mapInteractive}
-library(leaflet) 
-
-leaflet() %>%
-  addTiles() %>%
-  addMarkers(pharmaciesCascadeMethod, lng = pharmaciesCascadeMethod$long, lat = pharmaciesCascadeMethod$lat)
-```
-
-#### Hold up: I don't want to do all this, can I just do all this in Excel and pull in the file?
+## Hold up: I don't want to do all this, can I just do all this in Excel and pull in the file?
 
 Sure! I'm a big advocate of reproducibility and having a paper-trail, so I think everything should be written in code.
 
@@ -224,14 +225,15 @@ But I know that's not ideal for many of you, especially if the time frame is sli
 
 Here is what I would suggest for you to do:
 
-  1. Create the (1) Address, (2) City, (3) State, and (4) Zip fields for each address that you need.
-  2. Load/install `tidyverse`, `tidygeocoder`, and `readxl` packages. You do not need to reinstall if you've already installed one.
-  2. Read in the dataset into R using:
-      - `read_excel` from the `readxl` package for Excel files. **MUST INSTALL AND LOAD!**
-      - `read_csv` from the `readr` package (automatically loaded with `tidyverse`)
-      - `read.csv` using the base-R `utils` package (you do not need to load this - it is already loaded when you start R)
-  3. Feed your imported dataset `tidygeocoder`.
-  4. Output the file.
+  1. Create/arrange the (1) Address, (2) City, (3) State, and (4) Zip fields in Excel for each address that you need.
+  2. Boot up RStudio.
+  3. Load/install `tidyverse`, `tidygeocoder`, and `readxl` packages. You do not need to reinstall if you've already installed one.
+  4. Read in the dataset into R using:
+      - `read_excel` from the `readxl` package for Excel files. **AGAIN, YOU MUST INSTALL AND LOAD!**
+      - `read_csv` from the `readr` package (automatically loaded with `tidyverse`). If you save it from Excel as a .csv, this function will read in the data.
+      - `read.csv` using the base-R `utils` package (you do not need to load this - it is already loaded when you start R). Again, if you save it from Excel as a .csv, this function will read in the data appropriately, but you have to be wary of the `stringsAsFactors` argument mentioned below.
+  5. Feed your imported dataset to `tidygeocoder`.
+  6. Output the file.
   
 Another tutorial:
 
@@ -285,4 +287,16 @@ write.csv(x = geocoded, file = "save-to-my-directory") # base-R approach
 write_csv(x = geocode, file = "save-to-my-directory") # readr approach
 ```
 
+I'm going to save plotting for another time, because there's so much that can be done within R.
 
+### Information about R if you've never touched it before:
+
+I recommend:
+  
+  1. Downloading R from [CRAN](https://cran.r-project.org/).
+  2. Then downloading [RStudio](https://www.rstudio.com/products/rstudio/download/). RStudio is a graphic user interface. It isn't R itself -- it's like the body of the car while R from CRAN is the engine. 
+  3. When both have been installed open up the RStudio app and begin coding! 
+  
+If you need any help navigating the graphic user interface (GUI) of RStudio, feel free to reach out to me. I'm available in person most days, and I can certainly meet over Zoom.
+
+Until next time!
